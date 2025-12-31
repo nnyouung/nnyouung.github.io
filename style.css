@@ -1,0 +1,95 @@
+html,
+body {
+    height: 100%;
+    padding-left: 7%;
+    padding-right: 7%;
+}
+
+hr {
+    width: 200px;
+    margin-left: 0;
+    margin-bottom: 35px;
+}
+
+.main-and-projects {
+    height: 100%;
+}
+
+.containr-navi {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.containr-navi-menu {
+    display: flex;
+    /* flex 아이템 사이의 간격을 설정 */
+    gap: 24px;
+}
+
+.containr-profile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 85%;
+}
+
+.text-profile img {
+    padding: 10px;
+}
+
+.containr-img-profile {
+    width: 170px;
+    height: 170px;
+    border-radius: 70%;
+    overflow: hidden;
+    margin: 20px;
+}
+
+.img-profile {
+    width: 100%;
+}
+
+.container-project {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 40px;
+    align-items: center;
+}
+
+.img-project {
+    flex: 1;
+    max-width: 150px;
+}
+
+.text-project {
+    flex: 2;
+}
+
+.container-skill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 20px;
+    padding: 0 10px;
+    background-color: #ccc;
+    border-radius: 10px;
+    font-size: 12px;
+    /* 줄바꿈 방지 */
+    white-space: nowrap;
+}
+
+.aboutme {
+    height: 100%;
+}
+
+.container-aboutme {
+    border: 0.3px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px
+}
+
+.text-aboutme {
+    margin-right: 20px;
+}
