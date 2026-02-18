@@ -1,12 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { projects } from "../data/projects";
-import type { Project } from "../data/projects";
-import ProjectModal from "./ProjectModal";
 
 const container = {
   hidden: {},
@@ -23,48 +20,29 @@ const item = {
 };
 
 type ProjectGridProps = {
-  showTitle?: boolean;
-  showMore?: boolean;
-  showMoreHref?: string;
   maxItems?: number;
   variant?: "default" | "media";
-  useModal?: boolean;
   detailHrefBase?: string;
+  openInNewTab?: boolean;
 };
 
 export default function ProjectGrid({
-  showTitle = true,
-  showMore = true,
-  showMoreHref,
   maxItems,
   variant = "default",
-  useModal = true,
   detailHrefBase = "/portfolio",
+  openInNewTab = false,
 }: ProjectGridProps) {
-  const [selected, setSelected] = useState<Project | null>(null);
   const router = useRouter();
   const visibleProjects =
     typeof maxItems === "number" ? projects.slice(0, maxItems) : projects;
+  const hasMoreProjects =
+    typeof maxItems === "number" && projects.length > visibleProjects.length;
   const isMedia = variant === "media";
-  const detailHref = selected ? `${detailHrefBase}/${selected.id}` : undefined;
 
   return (
     <div>
-      {showTitle && (
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold text-slate-900 sm:text-3xl">
-            주요 프로젝트
-          </h2>
-          <p className="mt-3 text-m text-slate-500">
-            그동안 수행한 프로젝트 중 주요 프로젝트를 소개합니다.
-          </p>
-        </div>
-      )}
-
       <motion.div
-        className={`grid gap-6 sm:grid-cols-2 lg:grid-cols-3 ${
-          showTitle ? "mt-10" : "mt-6"
-        }`}
+        className={"grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mt-6"}
         variants={container}
         initial="hidden"
         whileInView="show"
@@ -76,27 +54,30 @@ export default function ProjectGrid({
             type="button"
             variants={item}
             onClick={() => {
-              if (useModal) {
-                setSelected(project);
+              const href = `${detailHrefBase}/${project.id}`;
+              if (openInNewTab) {
+                if (typeof window !== "undefined") {
+                  window.open(href, "_blank", "noopener,noreferrer");
+                }
               } else {
-                router.push(`${detailHrefBase}/${project.id}`);
+                router.push(href);
               }
             }}
-            className={`group flex h-full flex-col text-left transition hover:-translate-y-1 ${
+            className={`group flex h-full cursor-pointer flex-col text-left transition hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 active:translate-y-0 ${
               isMedia
-                ? "overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_18px_45px_-32px_rgba(15,23,42,0.45)]"
-                : "rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_10px_30px_-22px_rgba(15,23,42,0.35)]"
+                ? "overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_18px_45px_-32px_rgba(15,23,42,0.45)] hover:border-blue-300"
+                : "rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_10px_30px_-22px_rgba(15,23,42,0.35)] hover:border-blue-300"
             }`}
           >
             {isMedia ? (
               <>
-                <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
+                <div className="relative flex aspect-[16/14] w-full items-center justify-center overflow-hidden bg-slate-100">
                   <img
                     src={project.image}
                     alt={project.imageAlt ?? project.title}
-                    className="h-full w-full object-cover"
+                    className="w-full h-auto max-w-full object-contain"
                   />
-                  <span className="absolute bottom-3 right-3 rounded-full bg-slate-900/70 px-3 py-1 text-xs font-medium text-white">
+                  <span className="absolute bottom-3 right-3 rounded-full bg-slate-700/70 px-3 py-1 text-xs font-medium text-white">
                     {project.period}
                   </span>
                 </div>
@@ -106,10 +87,10 @@ export default function ProjectGrid({
                       {project.title}
                     </h3>
                     <p className="mt-2 text-sm text-slate-500">
-                      {project.description}
+                      {project.summary ? project.summary : project.description}
                     </p>
                   </div>
-                  <div className="mt-6 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
                     {project.tech.map((tech) => (
                       <span
                         key={tech}
@@ -147,32 +128,17 @@ export default function ProjectGrid({
         ))}
       </motion.div>
 
-      {showMore && (
-        <div className="mt-10 flex justify-center">
-          {showMoreHref ? (
-            <Link
-              href={showMoreHref}
-              className="rounded-full border border-slate-200 bg-white px-6 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300"
-            >
-              더 보기
-            </Link>
-          ) : (
-            <button
-              type="button"
-              className="rounded-full border border-slate-200 bg-white px-6 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300"
-            >
-              더 보기
-            </button>
-          )}
+      {hasMoreProjects && (
+        <div className="mt-8 flex justify-center">
+          <Link
+            href={detailHrefBase}
+            target={openInNewTab ? "_blank" : undefined}
+            rel={openInNewTab ? "noopener noreferrer" : undefined}
+            className="inline-flex cursor-pointer items-center justify-center rounded-3xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-[0_18px_45px_-32px_rgba(15,23,42,0.45)] transition hover:border-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 active:translate-y-0"
+          >
+            더보기
+          </Link>
         </div>
-      )}
-
-      {useModal && (
-        <ProjectModal
-          project={selected}
-          onClose={() => setSelected(null)}
-          detailHref={detailHref}
-        />
       )}
     </div>
   );

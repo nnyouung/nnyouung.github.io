@@ -1,11 +1,10 @@
-// TODO: 가독성 좋게 정리
-
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import NavPill from "../../../components/NavPill";
 import ProjectGallery from "../../../components/ProjectGallery";
 import ProjectLinks from "../../../components/ProjectLinks";
 import Section from "../../../components/Section";
+import TroubleshootingSection from "../../../components/TroubleshootingSection";
 import { projects } from "../../../data/projects";
 
 type ProjectDetailPageProps = {
@@ -37,10 +36,18 @@ export default async function ProjectDetailPage({
   const roleAndContribution = project.roleAndContribution?.length
     ? project.roleAndContribution
     : [];
+  const normalizedRoleAndContribution = roleAndContribution.map(
+    (item, index) =>
+      typeof item === "string"
+        ? { text: item, level: index === 0 ? 0 : 1 }
+        : { text: item.text, level: item.level ?? (index === 0 ? 0 : 1) },
+  );
   const achievements = project.achievements?.length ? project.achievements : [];
-  const troubleshooting = project.troubleshooting?.length
-    ? project.troubleshooting
-    : project.details;
+  const achievementTypeLabel = {
+    award: "수상",
+    release: "출시",
+    presentation: "시연",
+  } as const;
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -67,10 +74,7 @@ export default async function ProjectDetailPage({
                   {project.title}
                 </h1>
                 <p className="mt-3 text-base text-slate-500 sm:text-lg">
-                  {project.description}
-                </p>
-                <p className="mt-3 text-sm text-slate-400">
-                  {project.participants}
+                  {overview}
                 </p>
               </div>
               <span className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm">
@@ -90,8 +94,8 @@ export default async function ProjectDetailPage({
               <h2 className="text-lg font-semibold text-slate-900">
                 프로젝트 소개
               </h2>
-              <p className="mt-4 text-base leading-relaxed text-slate-600 sm:text-lg">
-                {overview}
+              <p className="whitespace-pre-line mt-4 text-base leading-relaxed text-slate-600 sm:text-lg">
+                {project.description}
               </p>
             </div>
           </div>
@@ -129,20 +133,57 @@ export default async function ProjectDetailPage({
             <h2 className="text-lg font-semibold text-slate-900">
               역할 및 기여
             </h2>
-            <div className="mt-4 space-y-3 text-base leading-relaxed text-slate-600 sm:text-lg">
-              {roleAndContribution.map((item) => (
-                <p key={item}>{item}</p>
+            <ul className="mt-4 space-y-3 text-base leading-relaxed text-slate-600 sm:text-lg">
+              {normalizedRoleAndContribution.map((item, index) => (
+                <li
+                  key={`${item.text}-${index}`}
+                  className={`marker:text-slate-400 ${
+                    item.level === 0
+                      ? "ml-0 font-semibold"
+                      : item.level === 1
+                        ? "ml-4 sm:ml-6 list-disc"
+                        : "ml-8 sm:ml-10 list-[circle]"
+                  }`}
+                >
+                  {item.text}
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         </Section>
 
         {achievements.length > 0 && (
           <Section className="pb-12" enableMotion={false}>
             <h2 className="text-lg font-semibold text-slate-900">주요 성과</h2>
-            <div className="mt-4 space-y-3 text-base leading-relaxed text-slate-600 sm:text-lg">
+            <div className="mt-4 space-y-3">
               {achievements.map((item) => (
-                <p key={item}>{item}</p>
+                <article key={item.id} className="w-fit">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded-full border border-blue-100 bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
+                        {achievementTypeLabel[item.type]}
+                      </span>
+                      <p className="text-base leading-relaxed text-slate-700 sm:text-lg">
+                        {item.title}
+                      </p>
+                      <span className="text-xs font-medium text-slate-400">
+                        {item.date}
+                      </span>
+                    </div>
+
+                    {item.url && (
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex w-fit items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
+                      >
+                        {item.urlLabel}
+                        <span aria-hidden>↗</span>
+                      </a>
+                    )}
+                  </div>
+                </article>
               ))}
             </div>
           </Section>
@@ -151,10 +192,8 @@ export default async function ProjectDetailPage({
         <Section className="pb-24" enableMotion={false}>
           <div>
             <h2 className="text-lg font-semibold text-slate-900">트러블슈팅</h2>
-            <div className="mt-4 space-y-3 text-base leading-relaxed text-slate-600 sm:text-lg">
-              {troubleshooting.map((item) => (
-                <p key={item}>{item}</p>
-              ))}
+            <div className="mt-4">
+              <TroubleshootingSection items={project.troubleshooting} />
             </div>
           </div>
         </Section>

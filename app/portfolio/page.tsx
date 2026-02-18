@@ -17,7 +17,7 @@ export default function PortfolioPage() {
               Portfolio
             </p>
             <h1 className="mt-4 text-3xl font-semibold text-slate-900 sm:text-4xl">
-              프로젝트 상세 내용을 확인하세요
+              프로젝트 상세 내용
             </h1>
             <p className="mt-4 text-base text-slate-500 sm:text-lg">
               역할, 기술 스택, 문제 해결 과정을 중심으로 정리했습니다.
@@ -26,13 +26,7 @@ export default function PortfolioPage() {
         </Section>
 
         <Section className="pb-20" viewportOnce>
-          <ProjectGrid
-            showTitle={false}
-            showMore={false}
-            variant="media"
-            useModal={false}
-            detailHrefBase="/portfolio"
-          />
+          <ProjectGrid variant="media" detailHrefBase="/portfolio" />
         </Section>
       </main>
     </div>

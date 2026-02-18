@@ -61,13 +61,16 @@ export const certifications: ExperienceItem[] = [
   {
     date: "2025.09",
     title: "정보처리기사",
+    description: "설명",
   },
   {
     date: "2025.09",
     title: "SQL 개발자",
+    description: "설명",
   },
   {
     date: "2021.09",
     title: "GTQ그래픽기술자격 1급",
+    description: "설명",
   },
 ];
