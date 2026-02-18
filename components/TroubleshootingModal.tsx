@@ -106,10 +106,22 @@ export default function TroubleshootingModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-100"
+              className="flex items-center justify-center rounded-full border border-slate-200 p-2 text-slate-600 transition hover:border-slate-300 hover:bg-slate-100"
               aria-label="트러블슈팅 모달 닫기"
             >
-              닫기
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                viewBox="0 0 22 22"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="15" y1="6" x2="6" y2="15" />
+                <line x1="6" y1="6" x2="15" y2="15" />
+              </svg>
             </button>
           </div>
           <div className="mt-3 flex flex-wrap gap-2">

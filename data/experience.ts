@@ -29,6 +29,11 @@ export const education: ExperienceItem[] = [
 
 export const awards: ExperienceItem[] = [
   {
+    date: "2026.01",
+    title: "우리FISA 프론트엔드 기술세미나 우승",
+    description: "설명",
+  },
+  {
     date: "2025.08",
     title: "2025 SW중심대학 디지털 경진대회: SW부문 우수상",
     description: "258명, 58개교 참여",

@@ -132,8 +132,8 @@ export default function ProjectGrid({
         <div className="mt-8 flex justify-center">
           <Link
             href={detailHrefBase}
-            target={openInNewTab ? "_blank" : undefined}
-            rel={openInNewTab ? "noopener noreferrer" : undefined}
+            target={"_blank"}
+            rel={"noopener noreferrer"}
             className="inline-flex cursor-pointer items-center justify-center rounded-3xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-[0_18px_45px_-32px_rgba(15,23,42,0.45)] transition hover:border-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 active:translate-y-0"
           >
             더보기
