@@ -9,20 +9,20 @@ const skillCards = [
   {
     title: "사용자 체감 성능 최적화",
     description:
-      "지표와 사용자 흐름을 기준으로 병목을 찾고, 체감되는 지점을 우선 개선합니다.",
-    items: ["렌더링 최적화", "지연 제거", "지표 기반 개선"],
+      "사용자 흐름을 기준으로 병목을 찾고, 체감되는 지점을 우선 개선합니다.",
+    items: ["렌더링 최적화", "지연 제거", "사용자 기반 개선"],
   },
   {
     title: "문제 재현 & 안정화",
     description:
-      "환경 차이, 타이밍 이슈처럼 재현이 어려운 문제를 끝까지 따라가 원인을 분리합니다.",
+      "환경 차이, 타이밍 이슈처럼 재현이 어려운 문제를 끝까지 따라가 원인을 해결합니다.",
     items: ["재현 조건 정리", "원인 분리", "트러블슈팅 기록"],
   },
 
   {
     title: "AI 기반 기능 구현",
     description:
-      "AI를 단순 호출로 끝내지 않고, 서비스 UX 안에서 자연스럽게 동작하도록 통합합니다.",
+      "AI를 단순히 실행하는 것이 아니라, 서비스 UX 안에서 자연스럽게 작동하도록 고민합니다.",
     items: ["AI 기능 설계", "UX 흐름 통합"],
   },
   {
@@ -50,10 +50,7 @@ export default function Home() {
             <h1 className="mt-6 text-3xl sm:text-5xl font-semibold leading-[36px] sm:leading-[60px] text-slate-900">
               안녕하세요,
               <br />
-              <span className="underline decoration-blue-500 decoration-[4px] underline-offset-[7px]">
-                원인 추적
-              </span>
-              으로 완성도를 만드는
+              원인 추적으로 완성도를 만드는
               <br />
               개발자
               <span className="text-blue-600"> 하은영</span>입니다.
@@ -66,7 +63,7 @@ export default function Home() {
           </div>
         </Section>
 
-        <Section id="about" className="pb-10 pt-16">
+        <Section id="about" className="py-16">
           <div className="rounded-3xl border border-slate-200 bg-white/80 p-6 shadow-sm sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-500">
               About me
@@ -191,7 +188,7 @@ export default function Home() {
           </div>
         </Section>
 
-        <Section id="projects" className="py-24">
+        <Section id="projects" className="py-16">
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-500">
               Portfolio
@@ -200,18 +197,13 @@ export default function Home() {
               포트폴리오
             </h2>
             <p className="mt-3 text-sm text-slate-500">
-              프로젝트 상세 내용을 확인합니다.
+              여러 프로젝트의 상세 내용을 확인합니다.
             </p>
             <ProjectGrid maxItems={3} variant="media" openInNewTab />
           </div>
         </Section>
 
-        <Section
-          id="skills"
-          className="pt-32 pb-24"
-          viewportAmount={0.4}
-          delay={0.05}
-        >
+        <Section id="skills" className="py-16">
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-500">
               Tech Stack
@@ -242,7 +234,7 @@ export default function Home() {
           </div>
         </Section>
 
-        <Section id="experience" className="py-24">
+        <Section id="experience" className="py-16">
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-500">
               Education & Awards
@@ -304,7 +296,7 @@ export default function Home() {
           </div>
         </Section>
 
-        <Section id="certifications" className="py-24">
+        <Section id="certifications" className="py-16">
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-500">
               Certifications
@@ -334,7 +326,7 @@ export default function Home() {
           </div>
         </Section>
 
-        <Section id="contact" className="py-24 pt-48">
+        <Section id="contact" className="py-24 pt-44">
           <div className="rounded-3xl border border-slate-200 bg-slate-50/70 p-6 shadow-soft sm:p-8">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div>

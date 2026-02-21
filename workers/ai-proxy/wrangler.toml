@@ -1,0 +1,15 @@
+name = "portfolio-ai-proxy"
+main = "src/index.ts"
+compatibility_date = "2026-02-18"
+workers_dev = true
+
+[vars]
+AI_BACKEND_URL = "https://portfolio-ai-backend-671172074222.asia-northeast3.run.app"
+ALLOWED_ORIGIN = "https://nnyouung.github.io"
+
+[env.dev]
+workers_dev = true
+
+[env.dev.vars]
+AI_BACKEND_URL = "https://portfolio-ai-backend-671172074222.asia-northeast3.run.app"
+ALLOWED_ORIGIN = ""

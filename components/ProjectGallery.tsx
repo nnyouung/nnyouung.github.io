@@ -1,3 +1,5 @@
+// TODO: 포트폴리오 사진 확대 시 화살표 위치 고정
+
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
