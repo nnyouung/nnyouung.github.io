@@ -28,6 +28,8 @@ jobs:
       - name: Install
         run: npm ci
       - name: Build
+        env:
+          NEXT_PUBLIC_AI_PROXY_URL: https://portfolio-ai-proxy.nnyouung.workers.dev
         run: npm run build
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3

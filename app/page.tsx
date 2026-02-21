@@ -72,7 +72,7 @@ export default function Home() {
             <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:items-start">
               <div className="shrink-0">
                 <img
-                  src="/images/profile.JPG"
+                  src="/images/profile.png"
                   alt="프로필"
                   className="h-40 w-28 rounded-3xl border border-slate-200 object-cover shadow-sm sm:h-56 sm:w-40"
                 />
