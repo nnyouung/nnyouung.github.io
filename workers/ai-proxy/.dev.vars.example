@@ -1,0 +1,5 @@
+# 개발 환경에서 쓰이는 값 템플릿
+# 실제 사용 시 파일명 .dev.vars로 변경 -> npm run dev:worker 실행
+AI_BACKEND_URL=https://portfolio-ai-backend-671172074222.asia-northeast3.run.app
+ALLOWED_ORIGIN=http://localhost:3000
+BACKEND_AUTH_TOKEN=

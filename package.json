@@ -4,7 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:worker": "cd workers/ai-proxy && npx wrangler dev --env dev --port 8787",
+    "dev:prod": "NEXT_PUBLIC_AI_PROXY_URL=https://portfolio-ai-proxy.nnyouung.workers.dev next dev",
     "build": "next build",
+    "build:prod": "NEXT_PUBLIC_AI_PROXY_URL=https://portfolio-ai-proxy.nnyouung.workers.dev next build",
+    "build:local": "next build",
     "start": "next start",
     "lint": "next lint"
   },
