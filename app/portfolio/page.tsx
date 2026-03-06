@@ -14,10 +14,10 @@ export default function PortfolioPage() {
         <Section className="pb-12 pt-16" viewportOnce>
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-500">
-              Portfolio
+              Projects
             </p>
             <h1 className="mt-4 text-3xl font-semibold text-slate-900 sm:text-4xl">
-              프로젝트 상세 내용
+              프로젝트 상세
             </h1>
             <p className="mt-4 text-base text-slate-500 sm:text-lg">
               역할, 기술 스택, 문제 해결 과정을 중심으로 정리했습니다.

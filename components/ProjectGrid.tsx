@@ -24,6 +24,7 @@ type ProjectGridProps = {
   variant?: "default" | "media";
   detailHrefBase?: string;
   openInNewTab?: boolean;
+  prioritizePinned?: boolean;
 };
 
 export default function ProjectGrid({
@@ -31,12 +32,25 @@ export default function ProjectGrid({
   variant = "default",
   detailHrefBase = "/portfolio",
   openInNewTab = false,
+  prioritizePinned = false,
 }: ProjectGridProps) {
   const router = useRouter();
+  const sortedProjects = prioritizePinned
+    ? projects
+        .map((project, index) => ({ project, index }))
+        .sort((a, b) => {
+          if (a.project.isPinned === b.project.isPinned) {
+            return a.index - b.index;
+          }
+          return a.project.isPinned ? -1 : 1;
+        })
+        .map(({ project }) => project)
+    : projects;
+
   const visibleProjects =
-    typeof maxItems === "number" ? projects.slice(0, maxItems) : projects;
+    typeof maxItems === "number" ? sortedProjects.slice(0, maxItems) : sortedProjects;
   const hasMoreProjects =
-    typeof maxItems === "number" && projects.length > visibleProjects.length;
+    typeof maxItems === "number" && sortedProjects.length > visibleProjects.length;
   const isMedia = variant === "media";
 
   return (

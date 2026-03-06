@@ -191,15 +191,20 @@ export default function Home() {
         <Section id="projects" className="py-16">
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-500">
-              Portfolio
+              Projects
             </p>
             <h2 className="mt-4 text-2xl font-semibold text-slate-900 sm:text-3xl">
-              포트폴리오
+              프로젝트
             </h2>
             <p className="mt-3 text-sm text-slate-500">
-              여러 프로젝트의 상세 내용을 확인합니다.
+              대표 프로젝트의 내용을 확인합니다.
             </p>
-            <ProjectGrid maxItems={3} variant="media" openInNewTab />
+            <ProjectGrid
+              maxItems={3}
+              variant="media"
+              openInNewTab
+              prioritizePinned
+            />
           </div>
         </Section>
 
@@ -240,17 +245,17 @@ export default function Home() {
               Education & Awards
             </p>
             <h2 className="mt-4 text-2xl font-semibold text-slate-900 sm:text-3xl">
-              교육 및 수상
+              수상 및 교육
             </h2>
             <p className="mt-3 text-sm text-slate-500">
-              지금까지의 교육 내용과 수상 내역입니다.
+              지금까지의 수상 내역과 교육 내용입니다.
             </p>
           </div>
 
           <div className="mt-14">
-            <h3 className="text-base font-semibold text-slate-900">교육</h3>
+            <h3 className="text-base font-semibold text-slate-900">수상</h3>
             <div className="mt-6 space-y-8 border-l border-slate-200 pl-6">
-              {education.map((item) => (
+              {awards.map((item) => (
                 <div key={item.title} className="relative">
                   <span className="absolute -left-[11px] top-2 h-3 w-3 rounded-full bg-blue-400" />
                   <div className="grid gap-4 sm:grid-cols-[140px_1fr] sm:items-start">
@@ -272,9 +277,9 @@ export default function Home() {
           </div>
 
           <div className="mt-14">
-            <h3 className="text-base font-semibold text-slate-900">수상</h3>
+            <h3 className="text-base font-semibold text-slate-900">교육</h3>
             <div className="mt-6 space-y-8 border-l border-slate-200 pl-6">
-              {awards.map((item) => (
+              {education.map((item) => (
                 <div key={item.title} className="relative">
                   <span className="absolute -left-[11px] top-2 h-3 w-3 rounded-full bg-blue-400" />
                   <div className="grid gap-4 sm:grid-cols-[140px_1fr] sm:items-start">
@@ -337,11 +342,10 @@ export default function Home() {
                   더 알고 싶으시다면?
                 </h2>
                 <p className="mt-3 text-sm text-slate-500">
-                  소개와 포트폴리오, 깃허브에서 더 자세한 내용을 확인할 수
-                  있습니다.
+                  프로젝트와 깃허브, 벨로그에서 더 자세한 내용을 확인할 수 있습니다.
                 </p>
               </div>
-              <span className="text-xs text-slate-400">Updated 2026.02</span>
+              <span className="text-xs text-slate-400">Updated 2026.03</span>
             </div>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -355,9 +359,9 @@ export default function Home() {
                       01
                     </span>
                     <div>
-                      <p className="text-xs text-slate-400">Portfolio</p>
+                      <p className="text-xs text-slate-400">Projects</p>
                       <h3 className="text-base font-semibold text-slate-900">
-                        포트폴리오
+                        프로젝트 상세
                       </h3>
                     </div>
                   </div>
@@ -366,7 +370,7 @@ export default function Home() {
                   </span>
                 </div>
                 <p className="mt-4 text-sm text-slate-500">
-                  프로젝트 상세 내용을 확인합니다.
+                  프로젝트 상세 내용을 확인할 수 있습니다.
                 </p>
               </Link>
               <a
@@ -418,7 +422,7 @@ export default function Home() {
                   </span>
                 </div>
                 <p className="mt-4 text-sm text-slate-500">
-                  회고와 공부 기록을 확인할 수 있습니다.
+                  공부 기록과 회고를 확인할 수 있습니다.
                 </p>
               </a>
             </div>

@@ -1,5 +1,3 @@
-// TODO: 포트폴리오 사진 확대 시 화살표 위치 고정
-
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -120,6 +118,32 @@ export default function ProjectGallery({ images }: ProjectGalleryProps) {
           onClick={() => setIsLightboxOpen(false)}
           role="presentation"
         >
+          {total > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  goPrev();
+                }}
+                aria-label="이전 이미지"
+                className="fixed left-4 top-1/2 z-50 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-700 shadow-sm transition hover:bg-white"
+              >
+                ←
+              </button>
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  goNext();
+                }}
+                aria-label="다음 이미지"
+                className="fixed right-4 top-1/2 z-50 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-700 shadow-sm transition hover:bg-white"
+              >
+                →
+              </button>
+            </>
+          )}
           <div
             className="relative inline-flex max-h-[94vh] max-w-[96vw] items-center justify-center"
             onClick={(event) => event.stopPropagation()}
@@ -130,27 +154,6 @@ export default function ProjectGallery({ images }: ProjectGalleryProps) {
               alt="프로젝트 이미지 원본"
               className="max-h-[94vh] w-auto max-w-full object-contain"
             />
-
-            {total > 1 && (
-              <>
-                <button
-                  type="button"
-                  onClick={goPrev}
-                  aria-label="이전 이미지"
-                  className="absolute left-2 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-700 shadow-sm transition hover:bg-white"
-                >
-                  ←
-                </button>
-                <button
-                  type="button"
-                  onClick={goNext}
-                  aria-label="다음 이미지"
-                  className="absolute right-2 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-700 shadow-sm transition hover:bg-white"
-                >
-                  →
-                </button>
-              </>
-            )}
           </div>
         </div>
       )}

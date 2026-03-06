@@ -13,6 +13,7 @@ import {
   findRelevantDocuments,
   type KnowledgeDocument,
 } from "../data/aiKnowledge";
+import Section from "../components/Section";
 
 type ChatRole = "assistant" | "user";
 
@@ -562,132 +563,132 @@ export default function AiChatPanel() {
   );
 
   return (
-    <div className="flex h-full min-h-0 flex-col">
-      {isHomeMode ? (
-        <div className="flex flex-1 flex-col justify-start overflow-y-auto">
-          <div className="mx-auto w-full max-w-2xl">
-            <div className="pb-12 text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-500">
-                AI Assistant
-              </p>
-              <h1 className="mt-4 text-3xl font-semibold text-slate-900 sm:text-4xl">
-                AI 챗봇
-              </h1>
-              <p className="mt-4 text-base text-slate-500 sm:text-lg">
-                포트폴리오 사이트와 블로그 글을 학습한 AI가 답변합니다.
-              </p>
-            </div>
+      <div className="pt-4 flex h-full min-h-0 flex-col">
+        {isHomeMode ? (
+          <Section className="pb-12 pt-12" viewportOnce>
+            <div className="flex flex-1 flex-col justify-start overflow-y-auto">
+              <div className="mx-auto w-full max-w-2xl text-center">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-500">
+                  AI Assistant
+                </p>
+                <h1 className="mt-4 text-3xl font-semibold text-slate-900 sm:text-4xl">
+                  AI 챗봇
+                </h1>
+                <p className="mt-4 text-base text-slate-500 sm:text-lg">
+                  포트폴리오 사이트와 블로그 글을 학습한 AI가 답변합니다.
+                </p>
 
-            <div className="space-y-2">
-              <p className="text-center text-xs font-semibold text-slate-500">
-                추천 질문
-              </p>
-              <div className="flex flex-wrap justify-center gap-2">
-                {starterQuestions.map((question) => (
-                  <button
-                    key={question}
-                    type="button"
-                    onClick={() => {
-                      void askQuestion(question);
-                    }}
-                    disabled={isLoading}
-                    className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {question}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-6">{renderInputForm(true)}</div>
-          </div>
-        </div>
-      ) : (
-        <>
-          <div
-            ref={scrollBoxRef}
-            className="min-h-0 flex-1 space-y-3 overflow-y-auto rounded-2xl border border-slate-200 bg-slate-50 p-3 sm:p-4"
-          >
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`w-fit max-w-[88%] rounded-2xl px-4 py-3 text-sm sm:text-[15px] ${
-                  message.role === "assistant"
-                    ? "border border-slate-200 bg-white text-slate-700 leading-7"
-                    : "ml-auto bg-slate-900 text-white leading-relaxed"
-                }`}
-              >
-                {message.role === "assistant" ? (
-                  <div className="space-y-3">
-                    {renderAssistantText(message.text)}
-                  </div>
-                ) : (
-                  <p className="whitespace-pre-wrap">{message.text}</p>
-                )}
-
-                {message.role === "assistant" &&
-                  message.sources &&
-                  message.sources.length > 0 && (
-                    <div className="mt-3 border-t border-slate-200 pt-3">
+                <div className="space-y-2">
+                  <p className="mt-16 text-center text-xs font-semibold text-slate-500">
+                    추천 질문
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {starterQuestions.map((question) => (
                       <button
+                        key={question}
                         type="button"
-                        onClick={() => toggleSources(message.id)}
-                        className="text-xs font-semibold text-blue-700 underline decoration-blue-300 underline-offset-2 transition hover:text-blue-800"
+                        onClick={() => {
+                          void askQuestion(question);
+                        }}
+                        disabled={isLoading}
+                        className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
                       >
-                        {expandedSourceMessageIds.has(message.id)
-                          ? "참고 문서 닫기"
-                          : `참고 문서 보기 (${message.sources.length})`}
+                        {question}
                       </button>
-
-                      {expandedSourceMessageIds.has(message.id) && (
-                        <ul className="mt-2 space-y-1 text-xs text-slate-600 sm:text-sm">
-                          {message.sources.map((source) => (
-                            <li
-                              key={`${source.title}-${source.url}`}
-                              className="break-all"
-                            >
-                              <a
-                                href={source.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 text-blue-700 underline decoration-blue-300 underline-offset-2 transition hover:text-blue-800"
-                              >
-                                {source.title}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  )}
-              </div>
-            ))}
-
-            {isLoading && (
-              <div className="w-fit max-w-[88%] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500">
-                <div className="inline-flex items-end gap-1.5">
-                  <span>답변 생성 중</span>
-                  <span className="ai-loading-dot">.</span>
-                  <span
-                    className="ai-loading-dot"
-                    style={{ animationDelay: "0.15s" }}
-                  >
-                    .
-                  </span>
-                  <span
-                    className="ai-loading-dot"
-                    style={{ animationDelay: "0.3s" }}
-                  >
-                    .
-                  </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
 
-          <div className="mt-4 shrink-0">{renderInputForm(false)}</div>
-        </>
-      )}
-    </div>
+                <div className="mt-20">{renderInputForm(true)}</div>
+              </div>
+            </div>
+          </Section>
+        ) : (
+          <>
+            <div
+              ref={scrollBoxRef}
+              className="min-h-0 flex-1 space-y-3 overflow-y-auto rounded-2xl border border-slate-200 bg-slate-50 p-3 sm:p-4"
+            >
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`w-fit max-w-[88%] rounded-2xl px-4 py-3 text-sm sm:text-[15px] ${
+                    message.role === "assistant"
+                      ? "border border-slate-200 bg-white text-slate-700 leading-7"
+                      : "ml-auto bg-slate-900 text-white leading-relaxed"
+                  }`}
+                >
+                  {message.role === "assistant" ? (
+                    <div className="space-y-3">
+                      {renderAssistantText(message.text)}
+                    </div>
+                  ) : (
+                    <p className="whitespace-pre-wrap">{message.text}</p>
+                  )}
+
+                  {message.role === "assistant" &&
+                    message.sources &&
+                    message.sources.length > 0 && (
+                      <div className="mt-3 border-t border-slate-200 pt-3">
+                        <button
+                          type="button"
+                          onClick={() => toggleSources(message.id)}
+                          className="text-xs font-semibold text-blue-700 underline decoration-blue-300 underline-offset-2 transition hover:text-blue-800"
+                        >
+                          {expandedSourceMessageIds.has(message.id)
+                            ? "참고 문서 닫기"
+                            : `참고 문서 보기 (${message.sources.length})`}
+                        </button>
+
+                        {expandedSourceMessageIds.has(message.id) && (
+                          <ul className="mt-2 space-y-1 text-xs text-slate-600 sm:text-sm">
+                            {message.sources.map((source) => (
+                              <li
+                                key={`${source.title}-${source.url}`}
+                                className="break-all"
+                              >
+                                <a
+                                  href={source.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 text-blue-700 underline decoration-blue-300 underline-offset-2 transition hover:text-blue-800"
+                                >
+                                  {source.title}
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    )}
+                </div>
+              ))}
+
+              {isLoading && (
+                <div className="w-fit max-w-[88%] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500">
+                  <div className="inline-flex items-end gap-1.5">
+                    <span>답변 생성 중</span>
+                    <span className="ai-loading-dot">.</span>
+                    <span
+                      className="ai-loading-dot"
+                      style={{ animationDelay: "0.15s" }}
+                    >
+                      .
+                    </span>
+                    <span
+                      className="ai-loading-dot"
+                      style={{ animationDelay: "0.3s" }}
+                    >
+                      .
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-4 shrink-0">{renderInputForm(false)}</div>
+          </>
+        )}
+      </div>
   );
 }
