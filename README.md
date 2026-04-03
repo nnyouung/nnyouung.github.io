@@ -96,7 +96,3 @@ nnyouung.github.io/
 | `QDRANT_API_KEY` | Qdrant API 키 |
 | `SLACK_WEBHOOK_URL` | Slack Incoming Webhook URL |
 | `FORCE_REINDEX` | `true` 시 Qdrant 재인덱싱 (기본값 `false`) |
-
-### 로컬 개발
-`cloud-run/spring-rag/src/main/resources/application-local.properties` (gitignore)에 위 값 설정.
-Qdrant 로컬 실행: `docker run -d --name qdrant -p 6333:6333 -p 6334:6334 qdrant/qdrant`
