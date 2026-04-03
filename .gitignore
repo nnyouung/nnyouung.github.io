@@ -5,5 +5,20 @@ out
 .env
 .env.local
 workers/ai-proxy/.dev.vars
+
 # TypeScript
 *.tsbuildinfo
+
+# IDE
+.idea/
+.vscode/
+
+# Claude Code 메모리
+.claude/
+
+# Spring Boot 로컬 환경 설정 (API 키 포함)
+cloud-run/spring-rag/src/main/resources/application-local.properties
+
+# Gradle 빌드 산출물
+cloud-run/spring-rag/build/
+cloud-run/spring-rag/.gradle/

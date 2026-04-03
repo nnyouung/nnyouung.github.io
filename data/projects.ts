@@ -63,40 +63,40 @@ export const projects: Project[] = [
       "TailwindCSS",
       "Cloudflare Workers",
       "Google Cloud Run",
-      "Gemini API",
+      "Spring Boot",
+      "Spring AI",
+      "OpenAI API",
     ],
     image: "/images/portfolio-1.png",
     imageAlt: "포트폴리오 웹 미리보기",
     images: [{ src: "/images/portfolio-1.png" }, { src: "/images/portfolio-2.png" }, { src: "/images/portfolio-3.png" }],
     summary: "GitHub Pages 정적 배포를 기반으로, AI 채팅 인터페이스를 추가해 빠르게 탐색할 수 있도록 설계한 포트폴리오 사이트입니다.",
-    description:"GitHub Pages 정적 배포를 기반으로, AI 채팅 인터페이스를 추가해 빠르게 탐색할 수 있도록 설계한 포트폴리오 사이트입니다.\n벡터 DB 없이 정적 문서 기반 검색(RAG-lite)으로 동작하며, Cloudflare Worker(게이트웨이)와 Cloud Run(정책 서버)로 요청 제어·보안·오류 정합성을 분리했습니다.",
+    description: "GitHub Pages 정적 배포를 기반으로, AI 채팅 인터페이스를 추가해 빠르게 탐색할 수 있도록 설계한 포트폴리오 사이트입니다.\nSpring AI와 OpenAI 임베딩(text-embedding-3-small)을 활용한 벡터 유사도 검색 기반 RAG로 동작하며, 포트폴리오 JSON과 Velog RSS를 이중 문서 소스로 활용합니다.\nCloudflare Worker(API 게이트웨이)와 Cloud Run(Spring Boot RAG 서버)으로 요청 제어·보안·오류 정합성을 분리했습니다.",
     roleAndContribution: [
       { text: "개인 프로젝트로 AI 포트폴리오 서비스 기획~운영까지 전 과정을 총괄", level: 0 },
-      { text: "정적 문서 기반 경량 검색 구조를 설계해 질의-근거 매칭 경로를 단순화", level: 1 },
+      { text: "Spring AI + OpenAI 임베딩 기반 벡터 검색 RAG 파이프라인을 설계 및 구현", level: 1 },
+      { text: "포트폴리오 JSON과 Velog RSS를 이중 소스로 통합해 AI 응답 커버리지를 확장", level: 1 },
       { text: "Cloudflare Worker를 API 게이트웨이화해 CORS·Origin·토큰 검증·오류 형식 통제를 일원화", level: 1 },
-      { text: "Cloud Run 정책 서버에 호출 제한, 연속 응답 처리, 품질 보정 정책을 구현", level: 1 },
-      { text: "응답 잘림을 감지해 continuation 및 재작성 루프를 적용해 답변 완성도 강화", level: 1 },
-      { text: "Grounded Prompt 규칙을 적용해 근거 외 생성 억제와 [출처] 강제 규약 정립", level: 1 },
+      { text: "Grounded Prompt 규칙을 적용해 근거 외 생성 억제와 출처 강제 규약 정립", level: 1 },
+      { text: "질문/답변 로그 기록 및 Slack 알림 연동으로 운영 가시성 확보", level: 1 },
       { text: "답변 출처 파싱/분리 렌더링 UI를 설계해 검증 가능성을 높임", level: 1 },
       { text: "추천 질문, 채팅 모드 전환, 로딩 인터랙션을 포함한 대화 UX를 설계", level: 1 }
     ],
     achievements: [],
     troubleshooting: [
       {
-        id: "gemini-response-truncation",
-        title: "Gemini 응답 잘림 문제 해결",
+        id: "rag-accuracy-improvement",
+        title: "RAG 정확도 개선 — 청킹·topK·프롬프트 튜닝",
         summary:
-          "답변 중간 단락이 끊기는 현상을 감지해 continuation + 재작성 보정으로 자연스러운 응답 완성으로 개선했습니다.",
-        tags: ["LLM", "Gemini", "Prompt Engineering", "AI Backend"],
-        content: `문제: Gemini 응답이 일정 길이 이후 중간에서 잘려 사용자에게 불완전한 답변이 전달되는 문제가 발생했습니다.
-        
-        추적: 단순 네트워크 retry가 아닌 LLM 응답 생성 단계에서 중단되는 패턴을 확인했습니다.
-        
-        원인: 모델 응답 길이 제한 및 내부 생성 중단으로 인해 일부 응답이 완결되지 않은 상태로 반환되었습니다.
-        
-        해결: 응답이 문장 중간에서 끝났는지 감지한 뒤 이어쓰기 요청을 보내는 continuation 전략을 구현하고, 필요 시 전체 내용을 다시 정리하도록 재작성 요청을 추가했습니다.
-        
-        결과: 사용자 입장에서 응답이 자연스럽게 이어지도록 개선되었고 AI 응답 완성도가 크게 향상되었습니다.`,
+          "벡터 검색 결과가 질문 의도와 맞지 않는 문제를 청킹 전략·검색 범위·시스템 프롬프트 세 축으로 개선했습니다.",
+        tags: ["RAG", "Spring AI", "OpenAI", "프롬프트 엔지니어링", "벡터 검색"],
+        content: `문제: 질문에 대한 답변 정확도가 낮고, 관련 문서가 검색되지 않거나 엉뚱한 청크가 상위에 노출되는 경우가 있었습니다.
+
+        추적: topK=6으로 고정된 검색 범위에서 하나의 긴 문서가 여러 청크로 쪼개지며 상위 결과를 독점하는 현상을 확인했습니다. 또한 시스템 프롬프트의 응답 규칙이 불완전해 개수 지정 질문이나 전체 이력 요청에 누락이 발생했습니다.
+
+        해결: topK를 10으로 늘려 검색 커버리지를 확장하고, 시스템 프롬프트에 개수 정확성·목록 완결성·중복 제거 규칙을 추가했습니다. 또한 포트폴리오 JSON 데이터의 구조적 품질을 높여 청크 분리 시 문맥 손실을 줄였습니다.
+
+        결과: 질문 의도에 맞는 문서가 상위에 노출되고, 개수 지정·이력 정리 질문에서 누락 없는 답변이 생성되었습니다.`,
         order: 1,
       },
       {
@@ -104,7 +104,7 @@ export const projects: Project[] = [
         title: "Worker 경계 레이어 오류 정규화",
         summary:
           "백엔드 예외 응답을 Worker에서 공통 JSON 형식으로 변환해 클라이언트의 오류 처리 흐름을 통일했습니다.",
-        tags: ["Cloudflare Workers", "API Gateway", "Error Handling"],
+        tags: ["Cloudflare Workers", "API 게이트웨이", "에러 처리"],
         content: `문제: Cloud Run 서버에서 예외가 발생하면 HTML 오류 페이지나 비정상 응답이 반환되는 경우가 있어 클라이언트에서 처리하기 어려웠습니다.
         
         추적: Worker 프록시에서 응답 타입을 검사해 JSON 형식이 아닌 응답이 그대로 전달되고 있음을 확인했습니다.
@@ -119,7 +119,7 @@ export const projects: Project[] = [
         title: "LLM 허위 정보 생성 방지",
         summary:
           "프롬프트 규칙으로 포트폴리오 외부 추론을 차단하고, 출처 기반 답변으로 일관되게 응답하도록 제한했습니다.",
-        tags: ["Prompt Engineering", "RAG", "LLM Safety"],
+        tags: ["프롬프트 엔지니어링", "RAG", "LLM 안전성", "환각 방지"],
         content: `문제: LLM이 포트폴리오에 없는 내용을 추론해 답변하는 hallucination 문제가 발생할 가능성이 있었습니다.
         
         해결: 프롬프트에 다음 규칙을 강제했습니다.
@@ -190,7 +190,7 @@ export const projects: Project[] = [
         title: "WebSocket 연결 불안정 원인 구조화",
         summary:
           "실시간 채팅에서 반복 연결/재연결이 발생한 원인을 인증-구독 순서 정합성으로 좁혀 CONNECT/SUBSCRIBE를 분리해 안정성을 확보했습니다.",
-        tags: ["React Native", "WebSocket", "Auth", "Realtime"],
+        tags: ["React Native", "WebSocket", "인증", "실시간", "실시간 통신", "실시간 채팅"],
         content: `문제: 실시간 채팅에서 연결이 간헐적으로 끊기고 재연결이 반복되어 사용자 대화 흐름이 자주 중단됐습니다. 백엔드와 프론트엔드가 각자 코드를 점검했지만 즉시 원인을 특정하지 못했고, 백엔드 팀 리소스도 제한적이었습니다.
           추적: 담당 영역만 보는 대신 평소 리뷰했던 시스템 흐름을 기준으로 인증, 연결 수립, 구독 단계의 실제 호출 순서를 다이어그램으로 재구성했습니다. 로그 타임스탬프를 매칭하자 토큰 검증 시점과 세션 유지 로직이 어긋나는 구간이 반복적으로 나타났습니다.
           원인: 인증이 확정되기 전에 연결 유지 로직이 먼저 실행되면서 서버에서 세션을 안정적으로 고정하지 못했고, 이후 구독 단계에서 실패가 누적됐습니다.
@@ -206,7 +206,7 @@ export const projects: Project[] = [
         title: "로그인 단계별 언어 튐 현상 제거",
         summary:
           "로그인 전후 i18n 초기화 시점 충돌로 언어가 튀는 문제를 해결하고, 단일 동기화 시점 정책 + 렌더링 게이트를 적용해 일관성을 확보했습니다.",
-        tags: ["i18n", "React Native", "State Sync", "UX"],
+        tags: ["다국어", "React Native", "상태 동기화", "UX"],
         content: `문제: 글로벌 사용자 대상 앱에서 첫 진입 언어가 로그인 전/후와 자동 로그인 과정마다 달라져 화면 언어가 반복적으로 바뀌는 현상이 발생했습니다. 이는 서비스 이해도에 직접 영향을 주는 품질 문제였습니다.
           추적: 앱 시작부터 인증 완료까지 i18n 초기화 지점을 순서대로 계측해 보니, 기기 언어와 서버 언어를 읽는 시점이 분기마다 달라 동일 세션에서도 값이 역전되는 구간이 있었습니다.
           원인: 언어 선택 기준이 단일 원천으로 정의되지 않아 초기 렌더링과 사용자 설정 동기화가 경쟁 상태를 만들고 있었습니다.
@@ -222,7 +222,7 @@ export const projects: Project[] = [
         title: "Expo SDK 54 이후 iOS Exit 65 해결",
         summary:
           "Expo SDK 54 업그레이드 이후의 Exit 65를 환경 의존 이슈로 규명하고, ReactCodegen 경로를 보정해 빌드 파이프라인을 복구했습니다.",
-        tags: ["Expo", "EAS", "iOS Build", "Codegen"],
+        tags: ["Expo", "EAS", "iOS 빌드", "코드 생성"],
         content: `문제: Expo SDK 54 업그레이드 이후 iOS 빌드가 Exit 65로 계속 실패했고, signing/provisioning/코드 오류 등 일반 원인을 순서대로 배제해도 해결되지 않았습니다.
           추적: 요약 로그만 보면 단서가 부족해 Xcode 전체 로그를 직접 확인했고, 실패 지점이 'ReactCodegen Generate Specs' 단계임을 확인했습니다. 이후 로그를 따라가며 참조 경로를 점검하자 Codegen이 프로젝트 루트가 아닌 '/Users/expo/package.json'을 찾다가 중단되는 패턴을 발견했습니다.
           원인: 로컬 소스 문제가 아니라 EAS 클라우드 빌드 환경에서의 경로 해석 이슈였고, New Architecture를 끄는 일반 해법은 'react-native-reanimated'와 충돌해 적용이 어려웠습니다.
@@ -236,7 +236,7 @@ export const projects: Project[] = [
         title: "필터 모달 중첩 선택 버그 개선",
         summary:
           "필터 모달에서 동시 상태 변경 시 UI 체크값과 API 파라미터 불일치가 생기는 문제를 functional update로 정리해 해결했습니다.",
-        tags: ["React Native", "State", "Filter", "UX"],
+        tags: ["React Native", "상태 관리", "필터", "UX"],
         content: `문제: 필터 모달에서 언어를 바꾸면 이전 선택 조건이 남아 중첩 필터링이 발생했고, UI 체크 상태와 실제 API 요청 값이 달라 사용자 관점에서 예측 불가능한 결과가 나왔습니다.
           추적: 이벤트 직후 state를 읽어 다음 상태를 계산하는 구간을 중심으로 값 흐름을 비교한 결과, React 비동기 업데이트 타이밍 때문에 계산 기준이 서로 다른 순간의 값을 참조하는 문제를 확인했습니다.
           원인: 관련 상태가 각각 독립적으로 갱신되며 기준 값이 분산됐고, 일부 로직은 오래된 스냅샷을 사용해 선택/해제/재선택 순서에서 누적 오차가 발생했습니다.
@@ -249,7 +249,7 @@ export const projects: Project[] = [
         title: "채팅 재진입 null dereference 크래시 대응",
         summary:
           "채팅 재진입 시 null 데이터 경로에서 발생한 크래시를 프런트 방어 코드와 백엔드 스키마 보강으로 동시에 제거했습니다.",
-        tags: ["React Native", "Runtime Error", "Defensive Coding", "Collaboration"],
+        tags: ["React Native", "런타임 에러", "방어적 코딩", "협업"],
         content: `문제: 채팅 목록에서 재진입할 때 간헐적으로 'Cannot read property id of null' 오류가 발생해 일부 사용자가 채팅 화면에 들어가지 못했습니다.
           추적: 메시지 페이로드를 단계별로 로깅해 비교한 결과, 특정 히스토리 데이터에서 'singleChatroom' 필드가 null로 내려오고 있음을 확인했습니다. 이 값이 렌더링 키와 이동 파라미터에 직접 사용되면서 예외가 발생했습니다.
           원인: 프론트에서 null 가능성을 가정하지 않은 접근과 백엔드 데이터 일관성 부족이 동시에 존재해, 특정 타이밍에 null dereference가 노출됐습니다.
@@ -262,7 +262,7 @@ export const projects: Project[] = [
         title: "Android TextInput 커서 길어짐 보정",
         summary:
           "Android에서 빈 입력 시 커서 길어짐이 발생하는 레이아웃 이슈를 안드로이드 폰트 패딩 특성으로 좁혀 UI 래퍼를 분기 개선했습니다.",
-        tags: ["React Native", "Android", "TextInput", "UI Bug"],
+        tags: ["React Native", "Android", "TextInput", "UI 버그"],
         content: `문제: Android에서 입력값이 비어 있을 때 TextInput 커서가 비정상적으로 길어져 시각적 완성도를 떨어뜨렸고, 동일 화면이 iOS에서는 정상이라 플랫폼 차이 분석이 필요했습니다.
           추적: React Native TextInput이 Android EditText 기반이라는 점을 기준으로 폰트 메트릭과 기본 패딩 동작을 확인했습니다. 테스트 화면에서 'includeFontPadding' 옵션과 수직 정렬 값을 조합해 실험하자 커서 높이 변화가 재현 가능하게 관측됐습니다.
           원인: 텍스트가 없어도 폰트 상하 패딩 영역이 레이아웃 계산에 포함되며 커서 높이가 과대 계산되는 Android 기본 동작이었습니다.
@@ -312,7 +312,7 @@ export const projects: Project[] = [
         title: "Update branch 직후 CI 실패 원인 추적",
         summary:
           "로컬은 통과해도 CI에서만 실패한 케이스를 병합 커밋 단위로 분해해 환경 기인 실패를 근본 수정했습니다.",
-        tags: ["Cypress", "CI", "Git", "Debugging"],
+        tags: ["Cypress", "CI/CD", "Git", "디버깅"],
         content: `문제: PR에서 Update branch를 수행한 뒤부터 Cypress 단계가 CI에서만 실패했고, 같은 커밋이 로컬에서는 재현되지 않아 단순 코드 오류인지 환경 영향인지 판단이 어려웠습니다.
           추적: 실패한 최초 스텝과 로그 타임라인을 기준으로 Update branch 시점에 유입된 커밋을 목록화하고, 테스트 설정/러너/관련 모듈 변경 파일을 우선으로 영향 범위를 좁혔습니다. 이후 실패 시나리오와 연관된 테스트를 분리 실행해 조건 차이를 확인했습니다.
           원인: 제 커밋 자체보다 베이스 브랜치 변경으로 테스트 전제가 바뀌면서 기존 코드의 잠재 버그가 CI 조건에서 드러난 상태였습니다.
@@ -328,7 +328,7 @@ export const projects: Project[] = [
         title: "Cypress cross-origin 로그 상태 누수 수정",
         summary:
           "로그가 누적되는 cross-origin 테스트 종료 경로의 상태 관리 누수를 공통 cleanup으로 통합해 제거했습니다.",
-        tags: ["Cypress", "State Management", "Cross Origin", "Bug Fix"],
+        tags: ["Cypress", "상태 관리", "크로스 오리진", "버그 수정"],
         content: `문제: cross-origin 테스트 이후 생성되는 로그가 다음 테스트에서 잘못된 그룹으로 묶이며, 로그 중첩과 표시 순서가 어긋나는 현상이 반복됐습니다.
           추적: origin 로그 그룹 상태가 생성/해제되는 지점을 실행 흐름별로 추적한 결과, 정상 종료 경로에서는 상태가 해제되지만 early return 또는 예외 처리 경로에서는 해제가 건너뛰어지는 패턴을 확인했습니다.
           원인: 상태 초기화 로직이 분기별로 흩어져 있어 특정 exit path에서 cleanup이 보장되지 않았고, 이전 테스트 상태가 다음 테스트로 전파되는 누수가 발생했습니다.
@@ -344,7 +344,7 @@ export const projects: Project[] = [
         title: "origin 로그 그룹 ID/레벨 불일치 해결",
         summary:
           "로그 그룹의 ID/레벨 갱신 규칙이 분리된 구조를 정리해 비동기 상황에서도 일관된 상태로 유지했습니다.",
-        tags: ["Cypress", "Async", "Logging", "Nullish Coalescing"],
+        tags: ["Cypress", "비동기", "로깅", "Nullish 병합"],
         content: `문제: origin 로그 그룹 처리에서 ID와 레벨이 서로 다른 규칙으로 관리되어 비동기 실행 순서에 따라 로그 중첩 깊이와 UI 표시가 어긋나는 문제가 있었습니다.
           추적: 그룹 생성 시점과 갱신 시점의 변수 흐름을 비교해 보니 ID는 기존 값을 유지하는 반면, 레벨은 매번 새로 계산되어 동일 그룹에서도 값이 분리될 수 있는 구조였습니다.
           원인: 동일 엔터티를 나타내는 핵심 필드가 다른 생명주기로 갱신되며 일관성이 깨졌고, 경계 타이밍에서 경고와 시각적 불일치가 발생했습니다.
@@ -358,7 +358,7 @@ export const projects: Project[] = [
         title: "Cypress GUI 미반영 이슈를 watch 빌드로 해결",
         summary:
           "CLI/GUI 결과가 달랐던 환경 간 빌드 불일치 문제를 러너 번들 자동 갱신으로 해결해 디버깅 신뢰도를 확보했습니다.",
-        tags: ["Cypress", "DX", "Build Pipeline", "Workspace"],
+        tags: ["Cypress", "개발자 경험", "빌드 파이프라인", "워크스페이스"],
         content: `문제: 테스트 코드는 통과했지만 Open GUI 화면에서는 수정한 UI가 계속 이전 상태로 남아 결과가 불일치했고, 같은 코드가 실행 경로에 따라 다르게 보였습니다.
         추적: 렌더링 로직보다 실행 환경 차이에 집중해 CLI와 GUI가 참조하는 산출물을 비교했습니다. 그 결과 GUI가 러너 번들을 고정 참조하고 있어 코드 변경 후에도 번들이 자동 갱신되지 않는 흐름을 확인했습니다.
         원인: 코드 결함이 아니라 개발 환경의 빌드 파이프라인 문제였고, GUI 검증 경로에 최신 번들이 공급되지 않아 오판 가능성이 커졌습니다.
@@ -427,7 +427,7 @@ export const projects: Project[] = [
         title: "MediaPipe 처리 위치 전환으로 응답 속도 개선",
         summary:
           "카메라 프레임 전체 업로드 구조의 병목을 줄이기 위해 클라이언트 1차 연산을 도입해 응답 시간을 약 50% 개선했습니다.",
-        tags: ["MediaPipe", "Performance", "Realtime", "Architecture"],
+        tags: ["MediaPipe", "성능 최적화", "실시간", "아키텍처"],
         content: `문제: 카메라 프레임을 서버에서 일괄 처리하는 구조로 인해 네트워크와 서버 부하가 커졌고, 수어 인식 응답이 불안정해 실시간 대화 경험을 해쳤습니다.
           추적: 전송 데이터 크기, 서버 처리 시간, 왕복 지연을 구간별로 분리해 측정하자 병목의 대부분이 프레임 업로드와 서버 전처리 구간에 집중되어 있음을 확인했습니다. 사용자 체감 지연은 네트워크 상황에 따라 크게 흔들렸습니다.
           원인: 고용량 원본 데이터를 서버에 지속 전달하는 구조가 실시간 상호작용 요구와 맞지 않았고, 서버 중앙 처리에 의존한 설계가 지연 변동성을 키웠습니다.
@@ -443,7 +443,7 @@ export const projects: Project[] = [
         title: "gRPC + MediaPipe 도입 시 Protobuf 충돌 및 빌드 파이프라인 안정화",
         summary:
           "Protobuf 중복 충돌의 원인을 의존성 트리로 분리 분석해 Gradle 빌드 파이프라인을 안정화했습니다.",
-        tags: ["Android", "gRPC", "Protobuf", "Gradle", "Build Pipeline"],
+        tags: ["Android", "gRPC", "Protobuf", "Gradle", "빌드 파이프라인", "실시간 통신"],
         content: `문제: gRPC 통신과 MediaPipe를 함께 도입한 이후 Protobuf 관련 클래스 미해석 오류와 Duplicate class 에러가 동시에 발생해 빌드가 중단됐습니다. 단순 의존성 교체로는 해결되지 않았고, 충돌 해결 후에도 Gradle Task 단계에서 API 비호환 및 중복 등록 오류가 이어졌습니다.
           추적: 코드 문제가 아닌 빌드 구조 문제로 판단하고 Gradle dependency tree를 분석했습니다. 그 결과 gRPC 내부의 'protobuf-javalite', 프로젝트의 'protobuf-java', MediaPipe 라이브러리가 동일한 WKT 타입을 각각 포함하고 있어 클래스가 중복 로딩되고 있음을 확인했습니다. 이후 빌드 실패 원인을 Task 실행 그래프까지 확장해 추적했습니다.
           원인: 서로 다른 Protobuf 구현이 공존하면서 코드 생성 단계와 컴파일 단계에서 충돌이 누적됐고, 후처리 스크립트가 여러 번 실행되며 동일 Task가 중복 등록되는 구조적 문제가 있었습니다. 빌드 스크립트가 단일 책임으로 분리되지 않아 설정 변경 시 부작용이 쉽게 전파되는 상태였습니다.
@@ -457,7 +457,7 @@ export const projects: Project[] = [
         title: "농인 복지관 인터뷰를 기반으로 인터페이스 재설계",
         summary:
           "현장 인터뷰로 텍스트 중심 설계 한계를 확인하고 수어/시각 중심 인터페이스로 UX 구조를 전면 보완했습니다.",
-        tags: ["Accessibility", "UX", "User Interview", "Product"],
+        tags: ["접근성", "UX", "사용자 인터뷰", "프로덕트"],
         content: `문제: 초기 화면은 일반 사용자 기준으로 설계되어 텍스트 안내와 설명 문장이 많았고, 팀 내부에서는 큰 문제가 없다고 판단하고 있었습니다.
         추적: 실제 사용성을 확인하기 위해 농인 복지관을 방문해 인터뷰를 진행했습니다. 그 과정에서 '대부분의 농인들은 한국어를 읽지 못한다.'라는 피드백을 들었습니다.
         원인: 기능 구현 자체보다 정보 전달 방식이 문제였습니다. 농인 사용자에게 한국어는 제2언어에 가까울 수 있는데, 텍스트 이해를 전제로 화면을 설계하고 있었습니다.
@@ -471,7 +471,7 @@ export const projects: Project[] = [
         title: "StrictMode 이중 실행으로 인한 WebSocket 경고 해소",
         summary:
           "개발 모드의 `useEffect` 이중 실행을 고려해 `useRef` 가드를 추가하고 불필요한 연결 종료/재연결을 막았습니다.",
-        tags: ["React", "WebSocket", "StrictMode", "useEffect"],
+        tags: ["React", "WebSocket", "StrictMode", "useEffect", "실시간 통신"],
         content: `문제: 웹 클라이언트에서 소켓 연결 직후 'WebSocket is closed before the connection is established' 경고가 반복됐고, 실시간 기능 검증 과정에서 신뢰도를 떨어뜨렸습니다.
           추적: 서버/네트워크 이상이 없는 상태에서 발생 시점이 마운트 직후라는 점에 집중해 React 렌더링 동작을 확인했습니다. React 18 개발 모드의 StrictMode에서 일부 'useEffect'가 의도적으로 두 번 실행되며 'cleanup -> 재실행'이 발생한다는 점을 재현했습니다.
           원인: 첫 연결 직후 cleanup이 실행되어 소켓이 닫히고, 곧바로 재연결이 시도되면서 경고가 반복되는 구조였습니다.
@@ -521,7 +521,7 @@ export const projects: Project[] = [
         title: "포인트 기능 도입 갈등을 일정 기준으로 구조화",
         summary:
           "기획·개발 간 우선순위 충돌을 기능/일정 단위로 재정의해 단계형 로드맵으로 합의해 프로젝트 리스크를 감소시켰습니다.",
-        tags: ["Collaboration", "Planning", "Leadership", "Product Thinking"],
+        tags: ["협업", "기획", "리더십", "프로덕트 씽킹"],
         content: `문제: 4개월 내 완성이 목표였던 뮤지컬 커뮤니티 앱에서 포인트 기능 도입 여부를 두고 팀 내 의견이 크게 갈렸습니다. 기획 측은 서비스 차별화를 위해 반드시 필요하다고 보았고, 개발 측은 일정 지연과 품질 저하를 우려했습니다. 사용자 경험과 개발 안정성이라는 서로 다른 우선순위가 부딪히며 논의가 반복됐습니다.
           추적: 단순 찬반이 아니라 판단 기준이 다르다는 점에 주목했습니다. 기능을 '게시물', '리뷰', '포인트 적립'처럼 구현 단위로 나누고, 각 기능의 기술 난이도를 상/중/하로 구분했습니다. 또한 예상 소요 시간을 Man-Day 기준으로 정리해, 개발자가 아니더라도 일정 부담을 직관적으로 이해할 수 있도록 자료를 구성했습니다.
           원인: '필요하다' 또는 '어렵다'라는 주장만 존재했고, 기능이 전체 일정과 완성도에 어떤 영향을 주는지 한눈에 볼 수 있는 기준이 없었습니다.

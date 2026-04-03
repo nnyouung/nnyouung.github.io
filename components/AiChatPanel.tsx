@@ -3,16 +3,9 @@ import {
   FormEvent,
   Fragment,
   ReactNode,
-  useMemo,
   useRef,
   useState,
 } from "react";
-import {
-  buildGroundedPrompt,
-  buildKnowledgeDocuments,
-  findRelevantDocuments,
-  type KnowledgeDocument,
-} from "../data/aiKnowledge";
 import Section from "../components/Section";
 
 type ChatRole = "assistant" | "user";
@@ -26,12 +19,13 @@ type ChatMessage = {
 
 type ProxyResponse = {
   text?: string;
+  sources?: SourceLink[];
   error?: string;
 };
 
 type SourceLink = {
   title: string;
-  url: string;
+  url?: string | null;
 };
 
 const starterQuestions = [
@@ -40,139 +34,9 @@ const starterQuestions = [
   "주요 수상/출시 이력을 연도순으로 알려줘.",
 ];
 
-function getFallbackSourceUrl(kind: KnowledgeDocument["kind"]) {
-  switch (kind) {
-    case "experience":
-      return "/#experience";
-    case "skill":
-      return "/#skills";
-    case "blog":
-      return "https://velog.io/@nnyouung/posts";
-    default:
-      return "/";
-  }
-}
 
-function normalizeSourceTitle(value: string) {
-  return value
-    .toLowerCase()
-    .replace(/^["'`]+|["'`]+$/g, "")
-    .replace(/[^\w가-힣\s-]+/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-}
 
-function extractCitedSourceTitles(answer: string) {
-  const sourceMatch = answer.match(/\[출처\]([\s\S]*)$/i);
-  const normalizeCitation = (value: string) =>
-    value
-      .trim()
-      .replace(/^[-*•]\s+/, "")
-      .replace(/^\d+[.)]\s+/, "")
-      .replace(/^\[문서\s*\d+\]\s*/i, "")
-      .replace(/\.$/, "")
-      .trim();
-
-  if (sourceMatch) {
-    const raw = sourceMatch[1].trim();
-    if (!raw) {
-      return [];
-    }
-
-    const titles = raw
-      .split(/\n|,/)
-      .map((item) => normalizeCitation(item))
-      .filter(Boolean);
-
-    if (titles.length > 0) {
-      return titles;
-    }
-  }
-
-  const sourceLinePattern =
-    /^(?:[-*•]\s*)?(?:\*\*)?(?:\[\s*출처\s*\]|출처|source)(?:\*\*)?\s*[:：]\s*(.+)$/i;
-  const inlineTitles = answer
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const matched = line.match(sourceLinePattern);
-      if (!matched?.[1]) {
-        return "";
-      }
-      return normalizeCitation(matched[1]);
-    })
-    .filter(Boolean);
-
-  return inlineTitles;
-}
-
-function findDocByCitation(
-  citationTitle: string,
-  docs: KnowledgeDocument[],
-): KnowledgeDocument | null {
-  const normalizedCitation = normalizeSourceTitle(citationTitle);
-  if (!normalizedCitation) {
-    return null;
-  }
-
-  const exactMatch =
-    docs.find(
-      (doc) => normalizeSourceTitle(doc.title) === normalizedCitation,
-    ) ?? null;
-  if (exactMatch) {
-    return exactMatch;
-  }
-
-  return (
-    docs.find((doc) => {
-      const normalizedDocTitle = normalizeSourceTitle(doc.title);
-      return (
-        normalizedDocTitle.includes(normalizedCitation) ||
-        normalizedCitation.includes(normalizedDocTitle)
-      );
-    }) ?? null
-  );
-}
-
-function getSourceLinksFromAnswer(
-  answer: string,
-  allDocs: KnowledgeDocument[],
-): SourceLink[] | undefined {
-  if (isNoEvidenceAnswer(answer)) {
-    return undefined;
-  }
-
-  const citedTitles = extractCitedSourceTitles(answer);
-  if (citedTitles.length === 0) {
-    return undefined;
-  }
-
-  const links: SourceLink[] = [];
-  const seen = new Set<string>();
-
-  for (const citationTitle of citedTitles) {
-    const matchedDoc = findDocByCitation(citationTitle, allDocs);
-    if (!matchedDoc) {
-      continue;
-    }
-
-    const url = matchedDoc.url ?? getFallbackSourceUrl(matchedDoc.kind);
-    const key = `${matchedDoc.title}::${url}`;
-    if (seen.has(key)) {
-      continue;
-    }
-    seen.add(key);
-    links.push({
-      title: matchedDoc.title,
-      url,
-    });
-  }
-
-  return links.length > 0 ? links : undefined;
-}
-
-async function requestGeminiAnswer(prompt: string) {
+async function requestRagAnswer(query: string): Promise<{ text: string; sources: SourceLink[] }> {
   const proxyUrl = process.env.NEXT_PUBLIC_AI_PROXY_URL;
   if (!proxyUrl) {
     throw new Error(
@@ -180,13 +44,11 @@ async function requestGeminiAnswer(prompt: string) {
     );
   }
 
-  const endpoint = `${proxyUrl.replace(/\/$/, "")}/chat`;
+  const endpoint = `${proxyUrl.replace(/\/$/, "")}/query`;
   const response = await fetch(endpoint, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ prompt }),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query }),
   });
 
   const data = (await response.json()) as ProxyResponse;
@@ -194,13 +56,10 @@ async function requestGeminiAnswer(prompt: string) {
     throw new Error(data.error ?? "AI 프록시 요청에 실패했습니다.");
   }
 
-  const answer = (data.text ?? "").trim();
-
-  if (answer) {
-    return answer;
-  }
-
-  return "사이트 내 정보로는 확인되지 않습니다.";
+  return {
+    text: (data.text ?? "").trim() || "사이트 내 정보로는 확인되지 않습니다.",
+    sources: data.sources ?? [],
+  };
 }
 
 function createMessage(
@@ -216,61 +75,7 @@ function createMessage(
   };
 }
 
-function isNoEvidenceAnswer(text: string) {
-  const normalized = text.replace(/\s+/g, " ").trim();
-  return /사이트\s*내\s*정보로는[^.\n]*확인되지\s*않습니다/.test(normalized);
-}
 
-function isContinuationRequest(text: string) {
-  return /(이어서|계속|마저|이어서\s*말|이어서\s*해|이어서\s*얘기)/.test(
-    text.trim(),
-  );
-}
-
-function getLastUserQuestion(messages: ChatMessage[]) {
-  for (let i = messages.length - 1; i >= 0; i -= 1) {
-    if (messages[i].role === "user") {
-      return messages[i].text;
-    }
-  }
-
-  return null;
-}
-
-function getLastAssistantAnswer(messages: ChatMessage[]) {
-  for (let i = messages.length - 1; i >= 0; i -= 1) {
-    if (messages[i].role === "assistant") {
-      return messages[i].text;
-    }
-  }
-
-  return null;
-}
-
-function stripSourceSection(answer: string) {
-  return answer.replace(/\n?\[출처\][\s\S]*$/i, "").trim();
-}
-
-function stripInlineSourceLines(answer: string) {
-  const filtered = answer
-    .split("\n")
-    .filter((line) => {
-      const normalized = line.trim();
-      return !/^(?:[-*•]\s*)?(?:\*\*)?(?:\[\s*출처\s*\]|출처|source)(?:\*\*)?\s*[:：]/i.test(
-        normalized,
-      );
-    })
-    .join("\n");
-
-  return filtered.replace(/\n{3,}/g, "\n\n").trim();
-}
-
-function truncateForPrompt(text: string, maxLength = 1200) {
-  if (text.length <= maxLength) {
-    return text;
-  }
-  return `${text.slice(0, maxLength)}...`;
-}
 
 function renderInlineBold(text: string, keyPrefix: string): ReactNode[] {
   const boldRegex = /\*\*(.+?)\*\*/g;
@@ -395,7 +200,6 @@ function renderAssistantText(text: string) {
 }
 
 export default function AiChatPanel() {
-  const allDocs = useMemo(() => buildKnowledgeDocuments(), []);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [expandedSourceMessageIds, setExpandedSourceMessageIds] = useState<
     Set<string>
@@ -425,32 +229,7 @@ export default function AiChatPanel() {
       return;
     }
 
-    const continuationRequest = isContinuationRequest(normalizedQuestion);
-    const lastUserQuestion = continuationRequest
-      ? getLastUserQuestion(messages)
-      : null;
-    const lastAssistantAnswer = continuationRequest
-      ? getLastAssistantAnswer(messages)
-      : null;
-    const retrievalQuestion = lastUserQuestion ?? normalizedQuestion;
-    const continuationBaseAnswer = lastAssistantAnswer
-      ? truncateForPrompt(
-          stripInlineSourceLines(stripSourceSection(lastAssistantAnswer)),
-        )
-      : null;
-    const promptQuestion =
-      continuationRequest && lastUserQuestion
-        ? [
-            `이전 핵심 질문: ${lastUserQuestion}`,
-            `현재 요청: ${normalizedQuestion}`,
-            continuationBaseAnswer
-              ? `직전 답변(끊긴 지점 참고): ${continuationBaseAnswer}`
-              : "",
-            "지시: 바로 직전 답변이 중간에 끊긴 것으로 보고, 앞부분 반복 없이 끊긴 부분부터 자연스럽게 이어서 완성해 주세요.",
-          ]
-            .filter(Boolean)
-            .join("\n")
-        : normalizedQuestion;
+    const promptQuestion = normalizedQuestion;
 
     const userMessage = createMessage("user", normalizedQuestion);
     setMessages((current) => [...current, userMessage]);
@@ -459,27 +238,11 @@ export default function AiChatPanel() {
     setError(null);
 
     try {
-      const relevantDocs = findRelevantDocuments(retrievalQuestion, allDocs, 6);
-
-      const conversationHistory = [...messages, userMessage]
-        .slice(-8)
-        .map((message) => ({
-          role: message.role,
-          text: message.text,
-        }));
-      const prompt = buildGroundedPrompt(
-        promptQuestion,
-        relevantDocs,
-        conversationHistory,
-      );
-      const answer = await requestGeminiAnswer(prompt);
-      const sourceLinks = getSourceLinksFromAnswer(answer, allDocs);
-      const cleanedAnswer =
-        stripInlineSourceLines(stripSourceSection(answer)) || answer;
+      const { text, sources } = await requestRagAnswer(promptQuestion);
       const assistantMessage = createMessage(
         "assistant",
-        cleanedAnswer,
-        sourceLinks,
+        text,
+        sources.length > 0 ? sources : undefined,
       );
       setMessages((current) => [...current, assistantMessage]);
       setExpandedSourceMessageIds((current) => {
@@ -648,7 +411,7 @@ export default function AiChatPanel() {
                                 className="break-all"
                               >
                                 <a
-                                  href={source.url}
+                                  href={source.url ?? undefined}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="inline-flex items-center gap-1 text-blue-700 underline decoration-blue-300 underline-offset-2 transition hover:text-blue-800"

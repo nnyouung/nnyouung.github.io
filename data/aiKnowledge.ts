@@ -184,8 +184,33 @@ export function buildKnowledgeDocuments(): KnowledgeDocument[] {
     content: `스택: ${group.items.join(", ")}`,
   }));
 
+  // 수상/출시/발표 전체 요약 문서 — topK 제한으로 개별 문서가 잘릴 때를 대비
+  const allAwardsLines: string[] = [];
+  awards.forEach((item) => {
+    allAwardsLines.push(`${item.date} [수상] ${item.title}`);
+  });
+  projects.forEach((project) => {
+    (project.achievements ?? []).forEach((a) => {
+      const label = getAchievementTypeLabel(a.type);
+      allAwardsLines.push(`${a.date} [${label}] ${a.title} (프로젝트: ${project.title})`);
+    });
+  });
+  allAwardsLines.sort((a, b) => b.localeCompare(a)); // 최신순
+
+  const allAwardsSummaryDoc: KnowledgeDocument = {
+    id: "summary-all-awards",
+    kind: "experience",
+    title: "전체 수상 및 출시/발표 이력 요약",
+    tags: ["수상", "출시", "발표", "성과", "이력", "연도순", "전체", "수상내역", "수상 이력"],
+    content: joinLines([
+      "포트폴리오 주인(하은영)의 전체 수상·출시·발표 이력입니다.",
+      ...allAwardsLines,
+    ]),
+  };
+
   return [
     profileDoc,
+    allAwardsSummaryDoc,
     ...projectDocs,
     ...achievementDocs,
     ...troubleshootingDocs,

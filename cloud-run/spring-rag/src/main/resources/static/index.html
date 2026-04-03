@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Portfolio RAG 테스트</title>
+  <style>
+    body { font-family: sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; }
+    h1 { font-size: 1.4rem; margin-bottom: 24px; }
+    textarea { width: 100%; padding: 10px; font-size: 1rem; border: 1px solid #ccc; border-radius: 6px; resize: vertical; box-sizing: border-box; }
+    button { margin-top: 10px; padding: 10px 24px; background: #1e293b; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; }
+    button:disabled { background: #94a3b8; cursor: not-allowed; }
+    #answer { margin-top: 24px; white-space: pre-wrap; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px; min-height: 60px; }
+    #sources { margin-top: 12px; font-size: 0.9rem; }
+    #sources a { color: #2563eb; text-decoration: none; display: block; margin-bottom: 4px; }
+    #sources a:hover { text-decoration: underline; }
+    .label { font-size: 0.8rem; font-weight: 600; color: #64748b; margin-top: 16px; margin-bottom: 4px; }
+    .error { color: #dc2626; }
+  </style>
+</head>
+<body>
+  <h1>Portfolio RAG 테스트</h1>
+  <textarea id="query" rows="3" placeholder="예: 하은영의 기술 스택이 뭐야?"></textarea>
+  <br>
+  <button id="btn" onclick="ask()">질문하기</button>
+
+  <div class="label">답변</div>
+  <div id="answer">—</div>
+  <div class="label" id="sources-label" style="display:none">참고 문서</div>
+  <div id="sources"></div>
+
+  <script>
+    async function ask() {
+      const query = document.getElementById('query').value.trim();
+      if (!query) return;
+
+      const btn = document.getElementById('btn');
+      const answerEl = document.getElementById('answer');
+      const sourcesEl = document.getElementById('sources');
+      const sourcesLabel = document.getElementById('sources-label');
+
+      btn.disabled = true;
+      answerEl.textContent = '답변 생성 중...';
+      answerEl.className = '';
+      sourcesEl.innerHTML = '';
+      sourcesLabel.style.display = 'none';
+
+      try {
+        const res = await fetch('/query', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          answerEl.textContent = data.error ?? '오류가 발생했습니다.';
+          answerEl.className = 'error';
+          return;
+        }
+
+        answerEl.textContent = data.text ?? '—';
+
+        if (data.sources && data.sources.length > 0) {
+          sourcesLabel.style.display = 'block';
+          sourcesEl.innerHTML = data.sources
+            .map(s => s.url
+              ? `<a href="${s.url}" target="_blank">${s.title}</a>`
+              : `<span>${s.title}</span>`)
+            .join('');
+        }
+      } catch (e) {
+        answerEl.textContent = '서버 연결 실패: ' + e.message;
+        answerEl.className = 'error';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    document.getElementById('query').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) ask();
+    });
+  </script>
+</body>
+</html>

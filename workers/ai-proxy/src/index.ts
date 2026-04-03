@@ -5,11 +5,17 @@ type Env = {
 };
 
 type ChatRequest = {
-  prompt?: unknown;
+  query?: unknown;
+};
+
+type SourceLink = {
+  title: string;
+  url?: string | null;
 };
 
 type BackendResponse = {
   text?: string;
+  sources?: SourceLink[];
   error?: string;
 };
 
@@ -117,22 +123,22 @@ async function handleChatRequest(request: Request, env: Env) {
     );
   }
 
-  const prompt = payload.prompt;
-  if (typeof prompt !== "string" || prompt.trim().length === 0) {
+  const query = payload.query;
+  if (typeof query !== "string" || query.trim().length === 0) {
     return json(
-      { error: "prompt는 비어 있지 않은 문자열이어야 합니다." },
+      { error: "query는 비어 있지 않은 문자열이어야 합니다." },
       { status: 400, headers: corsHeaders },
     );
   }
 
-  if (prompt.length > 20000) {
+  if (query.length > 2000) {
     return json(
-      { error: "prompt 길이가 너무 깁니다." },
+      { error: "query 길이가 너무 깁니다." },
       { status: 413, headers: corsHeaders },
     );
   }
 
-  const backendEndpoint = `${env.AI_BACKEND_URL.replace(/\/$/, "")}/chat`;
+  const backendEndpoint = `${env.AI_BACKEND_URL.replace(/\/$/, "")}/query`;
   const backendHeaders: HeadersInit = {
     "Content-Type": "application/json",
   };
@@ -145,7 +151,7 @@ async function handleChatRequest(request: Request, env: Env) {
     const backendResponse = await fetch(backendEndpoint, {
       method: "POST",
       headers: backendHeaders,
-      body: JSON.stringify({ prompt }),
+      body: JSON.stringify({ query }),
     });
 
     const rawBody = await backendResponse.text();
@@ -182,7 +188,10 @@ async function handleChatRequest(request: Request, env: Env) {
 
     const answer = (backendData.text ?? "").trim();
     return json(
-      { text: answer || "사이트 내 정보로는 확인되지 않습니다." },
+      {
+        text: answer || "사이트 내 정보로는 확인되지 않습니다.",
+        sources: backendData.sources ?? [],
+      },
       { headers: corsHeaders },
     );
   } catch {
@@ -207,7 +216,7 @@ export default {
       return json({ ok: true }, { headers: corsHeaders });
     }
 
-    if (url.pathname !== "/chat") {
+    if (url.pathname !== "/query") {
       return json(
         { error: "Not Found" },
         { status: 404, headers: corsHeaders },
